@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<heroes>
+  <hero>
+    <id>1</id>
+    <firstName>Priyanka</firstName>
+    <lastName>Chopra</lastName>
+    <birthdate>1982-07-18 01:11:11AM</birthdate>
+  </hero>
+  <hero>
+    <id>2</id>
+    <firstName>Bruce</firstName>
+    <lastName>Lee</lastName>
+    <birthdate>1940-11-27 14:11:11PM</birthdate>
+  </hero>
+  <hero>
+    <id>3</id>
+    <firstName>Sashko</firstName>
+    <lastName>Bilyi</lastName>
+    <birthdate>1962-09-19 01:11:11AM</birthdate>
+  </hero>
+  <hero>
+    <id>4</id>
+    <firstName>Jeff</firstName>
+    <lastName>Bezos</lastName>
+    <birthdate>1964-01-12 16:11:11PM</birthdate>
+  </hero>
+  <hero>
+    <id>5</id>
+    <firstName>Christopher</firstName>
+    <lastName>Langan</lastName>
+    <birthdate>1952-03-25 03:22:32AM</birthdate>
+  </hero>
+</heroes>
