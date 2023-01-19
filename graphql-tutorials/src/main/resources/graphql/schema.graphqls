@@ -1,3 +1,5 @@
+scalar LocalDate
+
 type Query {
     bookById(id: ID): Book
 }
@@ -7,8 +9,7 @@ type Book {
     name: String
     pageCount: Int
     authors: [Author]!
-    productionDate: String
-#    productionDate: LocalDate
+    productionDate: LocalDate
 }
 
 type Author {

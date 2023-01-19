@@ -1,20 +1,22 @@
 package com.graphqljava.tutorial.bookDetails;
 
 import graphql.language.StringValue;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.*;
-import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
+import graphql.schema.idl.RuntimeWiring;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 @Configuration(proxyBeanMethods = false)
 public class ScalarConfiguration {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    @Autowired
+    AppPatternConfiguration patternConfiguration;
 
     @Bean
     public GraphQLScalarType dateScalar() {
@@ -25,7 +27,7 @@ public class ScalarConfiguration {
                     @Override
                     public String serialize(final Object dataFetcherResult) {
                         if (dataFetcherResult instanceof LocalDate) {
-                            return formatter.format((LocalDate) dataFetcherResult);
+                            return patternConfiguration.getLocalDateFormatter().format((LocalDate) dataFetcherResult);
                         } else {
                             throw new CoercingSerializeException("Expected a LocalDate object.");
                         }
@@ -35,7 +37,7 @@ public class ScalarConfiguration {
                     public LocalDate parseValue(final Object input) {
                         try {
                             if (input instanceof String) {
-                                return LocalDate.parse((String) input, formatter);
+                                return LocalDate.parse((String) input, patternConfiguration.getLocalDateFormatter());
                             } else {
                                 throw new CoercingParseValueException("Expected a String");
                             }
@@ -49,7 +51,8 @@ public class ScalarConfiguration {
                     public LocalDate parseLiteral(final Object input) {
                         if (input instanceof StringValue) {
                             try {
-                                return LocalDate.parse(((StringValue) input).getValue(), formatter);
+                                return LocalDate.parse(((StringValue) input).getValue(),
+                                        patternConfiguration.getLocalDateFormatter());
                             } catch (DateTimeParseException e) {
                                 throw new CoercingParseLiteralException(e);
                             }
@@ -60,22 +63,15 @@ public class ScalarConfiguration {
                 }).build();
     }
 
-    // https://docs.spring.io/spring-graphql/docs/1.1.0-RC1/reference/html/#execution-graphqlsource-runtimewiring-configurer
     @Bean
     RuntimeWiringConfigurer runtimeWiringConfigurer() {
         GraphQLScalarType scalarType = dateScalar();
-        return wiringBuilder -> wiringBuilder.scalar(scalarType);
+        final RuntimeWiringConfigurer runtimeWiringConfigurer = (RuntimeWiring.Builder wiringBuilder) -> {
+            wiringBuilder.scalar(scalarType);
+            wiringBuilder.scalar(ExtendedScalars.LocalTime);
+            wiringBuilder.scalar(ExtendedScalars.GraphQLLong);
+        };
+        return runtimeWiringConfigurer;
     }
-
-/*
-    // https://docs.spring.io/spring-graphql/docs/1.1.0-RC1/reference/html/#execution-graphqlsource
-    @Bean
-    public GraphQlSourceBuilderCustomizer sourceBuilderCustomizer() {
-        GraphQLScalarType scalarType = dateScalar();
-        return (builder) ->
-                builder.configureGraphQl(graphQlBuilder ->
-                        graphQlBuilder.executionIdProvider((query, operationName, context) -> null));
-    }
-*/
 
 }
